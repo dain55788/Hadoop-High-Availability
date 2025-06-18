@@ -1,0 +1,146 @@
+version: "3"
+
+services:
+  namenode_backup:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    container_name: namenode_backup
+    hostname: namenodebackup
+    restart: always
+    ports:
+      - 9880:9870
+      - 9010:9010
+    volumes:
+      - hadoop_namenodebackup:/hadoop/dfs/name
+      - $PWD/hadoop_home2:/home
+      - ../../data:/data
+      - ../../scripts:/scripts
+      - ../../logs:/logs
+    environment:
+      - CLUSTER_NAME=cluster2
+    env_file:
+      - ./hadoop2.env
+    networks:
+      - hadoop-multi-cluster
+
+  datanode21:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: datanode21
+    hostname: datanode21
+    restart: always
+    ports:
+      - "9874:9874"
+    volumes:
+      - hadoop_datanode21:/hadoop/dfs/data
+      - ../../data:/data
+      - ../../scripts:/scripts
+      - ../../logs:/logs
+    environment:
+      SERVICE_PRECONDITION: "namenodebackup:9870"
+      HDFS_CONF_dfs_datanode_address: "datanode21:9876"
+      HDFS_CONF_dfs_datanode_http_address: "datanode21:9874"
+      HDFS_CONF_dfs_datanode_ipc_address: "datanode21:9877"
+    env_file:	
+      - ./hadoop2.env
+    networks:
+      - hadoop-multi-cluster
+
+  datanode22:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: datanode22
+    hostname: datanode22
+    restart: always
+    ports:
+      - "9875:9874"
+    volumes:
+      - hadoop_datanode22:/hadoop/dfs/data
+      - ../../data:/data
+      - ../../scripts:/scripts
+      - ../../logs:/logs
+    environment:
+      SERVICE_PRECONDITION: "namenodebackup:9870"
+      HDFS_CONF_dfs_datanode_address: "datanode22:9876"
+      HDFS_CONF_dfs_datanode_http_address: "datanode22:9874"
+      HDFS_CONF_dfs_datanode_ipc_address: "datanode22:9877"
+    env_file:
+      - ./hadoop2.env
+    networks:
+      - hadoop-multi-cluster
+
+  datanode23:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: datanode23
+    hostname: datanode23
+    restart: always
+    ports:
+      - "9878:9874"
+    volumes:
+      - hadoop_datanode23:/hadoop/dfs/data
+      - ../../data:/data
+      - ../../scripts:/scripts
+      - ../../logs:/logs
+    environment:
+      SERVICE_PRECONDITION: "namenodebackup:9870"
+      HDFS_CONF_dfs_datanode_address: "datanode23:9876"
+      HDFS_CONF_dfs_datanode_http_address: "datanode23:9874"
+      HDFS_CONF_dfs_datanode_ipc_address: "datanode23:9877"
+    env_file:
+      - ./hadoop2.env
+    networks:
+      - hadoop-multi-cluster
+  
+  resourcemanager2:
+    image: bde2020/hadoop-resourcemanager:2.0.0-hadoop3.2.1-java8
+    container_name: resourcemanager2
+    restart: always
+    ports:
+      - 8098:8088
+    volumes:
+      - ../../data:/data
+      - ../../scripts:/scripts
+      - ../../logs:/logs
+    environment:
+      SERVICE_PRECONDITION: "namenodebackup:9010 namenodebackup:9870 datanode21:9874 datanode22:9874 datanode23:9874"
+    env_file:
+      - ./hadoop2.env
+    networks:
+      - hadoop-multi-cluster
+
+  nodemanager2:
+    image: bde2020/hadoop-nodemanager:2.0.0-hadoop3.2.1-java8
+    container_name: nodemanager2
+    restart: always
+    volumes:
+      - ../../data:/data
+      - ../../scripts:/scripts
+      - ../../logs:/logs
+    environment:
+      SERVICE_PRECONDITION: "namenodebackup:9010 namenodebackup:9870 datanode21:9874 datanode22:9874 datanode23:9874 resourcemanager2:8088"
+    env_file:
+      - ./hadoop2.env
+    networks:
+      - hadoop-multi-cluster
+  
+  historyserver2:
+    image: bde2020/hadoop-historyserver:2.0.0-hadoop3.2.1-java8
+    container_name: historyserver2
+    restart: always
+    environment:
+      SERVICE_PRECONDITION: "namenodebackup:9010 namenodebackup:9870 datanode21:9874 datanode22:9874 datanode23:9874 resourcemanager2:8088"
+    volumes:
+      - hadoop_historyserver2:/hadoop/yarn/timeline
+    env_file:
+      - ./hadoop2.env
+    networks:
+      - hadoop-multi-cluster
+  
+volumes:
+  hadoop_home2:
+  hadoop_namenodebackup:
+  hadoop_datanode21:
+  hadoop_datanode22:
+  hadoop_datanode23:
+  hadoop_historyserver2:
+ 
+networks:
+  hadoop-multi-cluster:
+    external: true

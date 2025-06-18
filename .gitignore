@@ -192,3 +192,13 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+./HadoopMultiCluster/data/*
+
+./HadoopMultiCluster/logs
+
+./HadoopMultiCluster/.idea
+
+./HadoopMultiCluster/.venv
+
+./HadoopMultiCluster/airflow/logs
