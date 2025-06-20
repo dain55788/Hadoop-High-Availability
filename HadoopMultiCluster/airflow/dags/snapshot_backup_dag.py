@@ -17,24 +17,24 @@ default_args = {
 }
 
 with DAG(
-        'Yellow_Tripdata_Snapshot_Backup',
-        description='Snapshot Backup Yellow Trip Data Periodically',
+        'Yellow_Tripdata_Backup_Pipeline',
+        description='Backup Pipeline For Yellow Trip Taxi Data Periodically',
         default_args=default_args,
-        schedule_interval='*/15 * * * *',
-        tags=['yellow_tripdata_snapshot_backup'],
+        schedule_interval='*/10 * * * *',
+        tags=['yellow_tripdata_backup_pipeline'],
         catchup=False, ) as dag:
 
     start_backup_pipeline = EmptyOperator(
         task_id="start_backup_pipeline"
     )
 
-    snapshot_backup = BashOperator(
+    backup_pipeline = BashOperator(
         task_id = "cluster_snapshot_backup",
-        bash_command="/scripts/snapshot_backup.sh "
+        bash_command="/scripts/backup_pipeline.sh "
     )
 
     end_backup_pipeline = EmptyOperator(
         task_id="end_backup_pipeline"
     )
 
-    start_backup_pipeline >> snapshot_backup >> end_backup_pipeline
+    start_backup_pipeline >> backup_pipeline >> end_backup_pipeline

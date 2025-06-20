@@ -54,10 +54,10 @@ echo "" >> ../logs/distcp_recovery_logs.txt
 
 echo "At $(date): Creating snapshots for the main cluster..." >> ../logs/distcp_recovery_logs.txt
 docker exec -it namenode1 hdfs dfsadmin -allowSnapshot /yellow-tripdata/parquet/
-echo "- Successfully allow snapshot at $(date)" >> ../logs/snapshot_recovery_logs.txt
-echo "- Current snapshottable directories: " >> ../logs/snapshot_recovery_logs.txt
-docker exec -it namenode1 hdfs lsSnapshottableDir >> ../logs/snapshot_recovery_logs.txt
-echo "At $(date): Creating snapshot for the yellow tripdata..." >> ../logs/snapshot_recovery_logs.txt
+echo "- Successfully allow snapshot at $(date)" >> ../logs/distcp_recovery_logs.txt
+echo "- Current snapshottable directories: " >> ../logs/distcp_recovery_logs.txt
+docker exec -it namenode1 hdfs lsSnapshottableDir >> ../logs/distcp_recovery_logs.txt
+echo "At $(date): Creating snapshot for the yellow tripdata..." >> ../logs/distcp_recovery_logs.txt
 docker exec -it namenode1 hdfs dfs -createSnapshot /yellow-tripdata/parquet "yellow_tripdata_snapshots_$DATETIME"
 
 echo "At $(date): Recovering process finished successfully!!" >> ../logs/distcp_recovery_logs.txt
